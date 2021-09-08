@@ -1,31 +1,24 @@
-require('./src/db/mongoose')
-const User = require('./src/models/user')
-const express = require('express')
+const add = (a, b) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
 
-const app = express()
-
-// const add = (a, b) => {
-//     return new Promise((resolve, reject) => {
-//         setTimeout(() => {
-//             resolve(a + b)
-//         }, 2000)
-//     })
-// }
-
-// add(1, 5).then((sum) => {
-//     console.log(sum)
-//     return add(sum, 4).then((sum2) => {
-//         console.log(sum2)
-//     })
-// }).catch((e) => {
-//     console.log(e)
-// })
-
-app.get('/usersForPlay', (req, res) => {
-    User.find({}).then((user) => {
-        res.send(user)
-    } ).catch((e) => {
-        res.send(e)
+            if (a < 0 || b < 0) {
+                return reject('Numbers must be non negative')
+            }
+            resolve(a + b)
+        }, 2000)
     })
-})
+}
 
+const doWork = async() => {
+    const sum = await add(1, 4)
+    const sum2 = await add(sum, 5)
+    const sum3 = await add(sum2, -6)
+    return sum3
+}
+
+doWork().then((name) => {
+    console.log(name)
+} ).catch((err) => {
+    console.log(err)
+})
