@@ -58,16 +58,35 @@ app.get('/tasks', (req, res) => {
 
 app.get('/tasks/:id', (req, res) => {
     const id = req.params.id
-    
-    Task.findOne({
-    _id: id
-    }).then((task) => {
-        if (!task) {
+    Task.findById(id).then((task) => {
+        if(!task) {
             return res.status(404).send()
         }
         res.send(task)
     }).catch((err) => {
-        res.status(500).send()
+        res.send(err)
+    })
+})
+
+app.get('/usersforplay', (req, res) => {
+    User.findByIdAndUpdate('6132303833b76d2f41d78d9d', {name: 'Babachi'}).then((user) => {
+        console.log(user)
+        return User.countDocuments({age: 21})
+    }).then((user) => {
+        console.log(user)
+    }).catch((e) => {
+        console.log(e)
+    })
+})
+
+app.get('/tasksforplay', (req, res) => {
+    Task.findOneAndRemove({taskDescription: 'Fuck up'}).then((task) => {
+        console.log(task)
+        return Task.countDocuments({completed: false})
+    }).then((tasks) => {
+        console.log(tasks)
+    }).catch((e) => {
+        console.log(e)
     })
 })
 
