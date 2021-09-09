@@ -8,87 +8,82 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
     const firstUser = new User(req.body)
-
-    firstUser.save().then(() => {
-        res.status(201).send(firstUser)
-    }).catch((err) => {
-        res.status(400).send(err)
-    })
+    try {
+        await firstUser.save()
+        res.status(201).send()
+    } catch (e) {
+        res.status(500).send()
+    }
 })
 
-app.get('/users', (req, res) => {
-    User.find({}).then((users) => {
+app.get('/users', async (req, res) => {
+    try {
+        const users = await User.find({})
+        if (!users) {
+            return res.status(404).send()
+        }
         res.send(users)
-    }).catch((err) => {
-        res.send(err)
-    })
+    }catch(e) {
+        res.status(500).send()
+    }
+    
 })
 
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', async (req, res) => {
     const id = req.params.id
-    User.findById(id).then((user) => {
+
+    try {
+        const user = await User.findById(id)
         if (!user) {
-            return res.status(400).send()
+            return res.status(404).send()
         }
         res.send(user)
-    }).catch((err) => {
+    } catch(e) {
         res.status(500).send()
-    }) 
+    }
 })
 
-app.post('/tasks', (req, res) => {
+app.post('/tasks', async (req, res) => {
     const firstTask = new Task(req.body)
 
-    firstTask.save().then(() => {
+    try {
+        await firstTask.save()
         res.status(201).send(firstTask)
-    }).catch((err) => {
-        res.status(400).send(err)
-    })
+    } catch(e) {
+        res.status(400).send()
+    }
 } )
 
-app.get('/tasks', (req, res) => {
-    Task.find({}).then((tasks) => {
+app.get('/tasks', async (req, res) => {
+
+    try {
+        const tasks = await Task.find({})
+        if (!tasks) {
+            return res.status(404).send()
+        } 
         res.send(tasks)
-    }).catch((err) => {
-        res.status(500).send(err)
-    })
+    } catch(e) {
+        res.status(500).send()
+    }
 })
 
-app.get('/tasks/:id', (req, res) => {
+app.get('/tasks/:id', async (req, res) => {
     const id = req.params.id
-    Task.findById(id).then((task) => {
-        if(!task) {
+
+    try {
+        const task = await Task.findById(id).then((task))
+        if (!task) {
             return res.status(404).send()
         }
         res.send(task)
-    }).catch((err) => {
-        res.send(err)
-    })
+    } catch(e) {
+        res.status(500).send()
+    }
 })
 
-app.get('/usersforplay', (req, res) => {
-    User.findByIdAndUpdate('6132303833b76d2f41d78d9d', {name: 'Babachi'}).then((user) => {
-        console.log(user)
-        return User.countDocuments({age: 21})
-    }).then((user) => {
-        console.log(user)
-    }).catch((e) => {
-        console.log(e)
-    })
-})
 
-app.get('/tasksforplay', (req, res) => {
-    Task.findOneAndRemove({taskDescription: 'Fuck up'}).then((task) => {
-        console.log(task)
-        return Task.countDocuments({completed: false})
-    }).then((tasks) => {
-        console.log(tasks)
-    }).catch((e) => {
-        console.log(e)
-    })
-})
 
 app.listen(port, () => {
     console.log('Server Initialized!!')
