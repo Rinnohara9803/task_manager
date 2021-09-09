@@ -45,6 +45,30 @@ app.get('/users/:id', async (req, res) => {
     }
 })
 
+app.patch('/users/:id', async (req, res) => {
+    const id = req.params.id
+
+    const updates = Object.keys(req.body)
+    const allowedFields = ['name', 'email', 'age', 'password']
+
+    const isValidOperation = updates.every((update) => allowedFields.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send() 
+    }
+
+    try {
+        const user = await User.findByIdAndUpdate(id, req.body, {new: true, runValidators: true})
+
+        if(!user) {
+           return res.status(404).send()
+        }
+        res.send(user)
+    } catch(e) {
+        res.send(e)
+    }
+})
+
 app.post('/tasks', async (req, res) => {
     const firstTask = new Task(req.body)
 
@@ -83,7 +107,32 @@ app.get('/tasks/:id', async (req, res) => {
     }
 })
 
+app.patch('/tasks/:id', async (req, res) => {
+    const id = req.params.id
 
+    const updatingFields = Object.keys(req.body)
+    const allowedFields = ['taskDescription', 'completed']
+
+    const isValidOperation = updatingFields.every((updateField) => allowedFields.includes(updateField))
+
+    if(!isValidOperation) {
+        return res.status(400).send({error: "Invalid Operation"})
+    }
+
+    try {
+        const task = await Task.findByIdAndUpdate(id, req.body, {new: true, runValidators: true})
+
+        if(!task) {
+            return res.status(400).send()
+        }
+
+        res.send(task)
+
+    } catch (e) {
+        res.send(e)
+    }
+
+})
 
 app.listen(port, () => {
     console.log('Server Initialized!!')
