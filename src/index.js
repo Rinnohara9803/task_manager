@@ -69,6 +69,23 @@ app.patch('/users/:id', async (req, res) => {
     }
 })
 
+app.delete('/users/:id', async (req, res) => {
+    const id = req.params.id
+
+    try {
+        const deletedUser = await User.findByIdAndDelete(id)
+
+        if(!deletedUser) {
+           return res.status(404).send()
+        }
+
+        res.send(deletedUser)
+
+    } catch(e) {
+        res.status(500).send()
+    }
+})
+
 app.post('/tasks', async (req, res) => {
     const firstTask = new Task(req.body)
 
@@ -132,6 +149,23 @@ app.patch('/tasks/:id', async (req, res) => {
         res.send(e)
     }
 
+})
+
+app.delete('/tasks/:id', async (req, res) => {
+    const id = req.params.id
+
+    try {
+        const deletedTask = await Task.findByIdAndDelete(id)
+
+        if(!deletedTask) {
+           return res.status(404).send()
+        }
+
+        res.send(deletedTask)
+
+    } catch(e) {
+        res.status(500).send()
+    }
 })
 
 app.listen(port, () => {
